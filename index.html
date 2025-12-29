@@ -4,13 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Happy Birthday</title>
-  <meta name="description" content="A small, shareable birthday card with photos, a message and light snowfall — a sweet surprise.">
-  <meta name="theme-color" content="#fff7fb">
-  <!-- Open Graph / social preview -->
-  <meta property="og:title" content="Happy Birthday — A sweet surprise">
-  <meta property="og:description" content="A small, shareable birthday card with photos, a message and light snowfall — a sweet surprise.">
-  <meta property="og:type" content="website">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,13 +12,13 @@
 
   <main class="card" role="main">
     <h1>Happy Birthday!</h1>
-    <p class="subtitle">❄️A sweet day for a sweet friend ❄️</p>
+    <p class="subtitle">❄️Hope you a sweet year for a sweet person ❄️</p>
 
     <!-- Gallery / slideshow -->
+    <p class="subtitle">🩷some of lovely memories🩷</p>
     <section class="gallery" aria-label="Photo gallery">
         <div class="slide">
           <img id="mainPhoto" src="assets/photo1.jpg" alt="Snow cherry cake or memory photo" onerror="this.style.display='none'">
-          <div class="photo-fallback" aria-hidden="true">🍰</div>
           <!-- decorative cake sticker removed; cakes now float randomly across the screen -->
         </div>
         <div id="thumbs" class="thumbs" role="list" aria-live="polite">
@@ -36,7 +29,7 @@
     <button id="openBtn" aria-expanded="false">Open your surprise</button>
 
     <section id="message" class="message" aria-hidden="true">
-      <h2>To my Malak</h2>
+      <h2>To Malak</h2>
       <p id="giftText">Wishing you a day full of laughter, love, a perfectly sweet cake, and full of snow. Happy Birthday!</p>
       <p class="from">— From someone who cares</p>
     </section>
@@ -44,6 +37,15 @@
     
   </main>
 
+  <!-- Fullscreen image viewer -->
+  <div id="fullscreenViewer" aria-hidden="true">
+    <img id="fullscreenImage" alt="Fullscreen photo">
+  </div>
+  <audio id="bgMusic" loop preload="auto">
+  <source src="assets/happy-birthday.mp3" type="audio/mpeg">
+  </audio>
   <script src="script.js"></script>
+</body>
+</html>
 </body>
 </html>
