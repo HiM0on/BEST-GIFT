@@ -2,7 +2,7 @@
 const openBtn = document.getElementById('openBtn');
 const message = document.getElementById('message');
 const confettiCanvas = document.getElementById('confetti-canvas');
-
+const bgMusic = document.getElementById("bgMusic");
 // small inline SVG fallbacks (used if user SVG not present in assets/)
 const svgs = [
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l1.1 3.6 3.4-2.1-3.4 4.2 4.2 1.1-4.2 1.1 3.4 4.2-3.4-2.1L12 22l-1.1-3.6-3.4 2.1 3.4-4.2-4.2-1.1 4.2-1.1L10.9 5.6 7.5 7.7 12 2z"/></svg>`
@@ -77,7 +77,12 @@ openBtn.addEventListener('click', ()=>{
   const isHidden = message.getAttribute('aria-hidden') === 'true';
   message.setAttribute('aria-hidden', String(!isHidden));
   openBtn.setAttribute('aria-expanded', String(isHidden));
-  if(isHidden){
+  if(isHidden){ if (
+    bgMusic && bgMusic.paused) {
+    bgMusic.volume = 0.35;
+    bgMusic.currentTime = 0;
+    bgMusic.play();
+      }
     // small celebratory visual: briefly pulse the card
     document.querySelector('.card').animate([
       { transform: 'scale(0.995)' },
@@ -158,6 +163,9 @@ openBtn.addEventListener('click', ()=>{
     }, 260);
   }
   else{
+    if (bgMusic) {
+  bgMusic.pause();
+}
     // user closed the message; cakes continue to appear independently
   }
 });
@@ -165,11 +173,88 @@ openBtn.addEventListener('click', ()=>{
 // Gallery behavior — auto-detect images named photo1..photo20 in assets/
 const thumbsContainer = document.getElementById('thumbs');
 const mainPhoto = document.getElementById('mainPhoto');
+const fullscreenViewer = document.getElementById("fullscreenViewer");
+const fullscreenImage = document.getElementById("fullscreenImage");
 const photoFallback = document.querySelector('.photo-fallback');
 let photoSrcs = [];
 let currentIndex = 0;
 const MAX_PHOTOS = 20;
 
+// ===== Swipe support for mobile gallery =====
+let touchStartX = 0;
+let touchEndX = 0;
+const SWIPE_THRESHOLD = 50; // px
+
+function handleSwipe() {
+  if (photoSrcs.length <= 1) return;
+
+  const diff = touchStartX - touchEndX;
+
+  if (Math.abs(diff) < SWIPE_THRESHOLD) return;
+
+  if (diff > 0) {
+    // swipe left → next image
+    const next = (currentIndex + 1) % photoSrcs.length;
+    showPhoto(next);
+  } else {
+    // swipe right → previous image
+    const prev =
+      (currentIndex - 1 + photoSrcs.length) % photoSrcs.length;
+    showPhoto(prev);
+  }
+}
+// ===== Fullscreen image on tap =====
+
+// Open fullscreen on tap
+mainPhoto.addEventListener("click", () => {
+  if (!mainPhoto.src) return;
+
+  fullscreenImage.src = mainPhoto.src;
+  fullscreenViewer.classList.add("active");
+  document.body.style.overflow = "hidden";
+});
+
+// Close fullscreen on tap
+fullscreenViewer.addEventListener("click", () => {
+  fullscreenViewer.classList.remove("active");
+  document.body.style.overflow = "";
+});
+// ===== Swipe support inside fullscreen =====
+let fsStartX = 0;
+let fsEndX = 0;
+const FS_SWIPE_THRESHOLD = 60;
+
+fullscreenViewer.addEventListener("touchstart", (e) => {
+  fsStartX = e.touches[0].clientX;
+}, { passive: true });
+
+fullscreenViewer.addEventListener("touchend", (e) => {
+  fsEndX = e.changedTouches[0].clientX;
+
+  const diff = fsStartX - fsEndX;
+  if (Math.abs(diff) < FS_SWIPE_THRESHOLD) return;
+
+  if (diff > 0) {
+    // swipe left → next
+    const next = (currentIndex + 1) % photoSrcs.length;
+    showPhoto(next);
+    fullscreenImage.src = photoSrcs[next];
+  } else {
+    // swipe right → previous
+    const prev = (currentIndex - 1 + photoSrcs.length) % photoSrcs.length;
+    showPhoto(prev);
+    fullscreenImage.src = photoSrcs[prev];
+  }
+});
+// Touch events on the main image
+mainPhoto.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+
+mainPhoto.addEventListener("touchend", (e) => {
+  touchEndX = e.changedTouches[0].clientX;
+  handleSwipe();
+});
 function tryLoadPhotos(){
   let loaded = 0;
   for(let i=1;i<=MAX_PHOTOS;i++){
